@@ -9,10 +9,12 @@ pip install poetry
 ```
 
 <details>
-  <summary>How to install Python 3.12 if it is not available in your package manager</summary>
+  <summary>Install Python 3.12 if it is not available in your package manager</summary>
 
 These instructions are for Ubuntu 22.04. If you're on a different distribution,
 or - God forbid! - Windows, you should adjust these accordingly.
+
+Also, these instructions are about using Poetry with Pyenv-managed (non-system) Python.
  
 ### Step 1: Update and Install Dependencies
 Before we install pyenv, we need to update our package lists for upgrades and new package installations. We also need to install dependencies for pyenv. 
@@ -48,6 +50,8 @@ pyenv install 3.12
 ```
 
 ### Step 4: Connect Poetry to it
+Do this in the template dir. Pycharm will automatically connect to it later
+
 ```bash
 poetry env use ~/.pyenv/versions/3.12.1/bin/python
 ```
@@ -73,10 +77,22 @@ poetry install --no-root --with dev,test
 poetry run pre-commit install
 ```
 
-4. Launch of the project:
+4. Launch the project:
 
 ```bash
 poetry run uvicorn app.main:app [--reload]
+```
+
+Alternatively, you can use Classy-FastAPI-based run:
+```bash
+poetry run uvicorn app.main_classy:app [--reload]
+```
+
+or do it in two steps:
+```bash
+poetry shell
+uvicorn app.main:app
+
 ```
 
 5. Running tests:
@@ -134,6 +150,13 @@ helm upgrade --install <release-name> <repo-name>/<chart-name>
 ```
 
 https://helm.sh/ru/docs/
+
+## Classy-FastAPI
+Classy-FastAPI allows you to easily do dependency injection of 
+object instances that should persist between FastAPI routes invocations,
+e.g. database connections.
+More on that (with examples) at [Classy-FastAPI GitLab page](https://gitlab.com/companionlabs-opensource/classy-fastapi
+).
 
 ## GitHub Actions
 GitHub Actions run tests, build and push a Docker image, creat and push a Helm chart release, deploy the project to Kubernetes cluster.
