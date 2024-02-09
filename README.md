@@ -8,6 +8,62 @@ Web service template in Python for reuse.
 pip install poetry
 ```
 
+<details>
+  <summary>Install Python 3.12 if it is not available in your package manager</summary>
+
+These instructions are for Ubuntu 22.04. If you're on a different distribution,
+or - God forbid! - Windows, you should adjust these accordingly.
+
+Also, these instructions are about using Poetry with Pyenv-managed (non-system) Python.
+ 
+### Step 1: Update and Install Dependencies
+Before we install pyenv, we need to update our package lists for upgrades and new package installations. We also need to install dependencies for pyenv. 
+
+Open your terminal and type:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
+libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils \
+tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+
+```
+
+
+### Step 2: Install Pyenv
+We will clone pyenv from the official GitHub repository and add it to our system path.
+
+```bash
+git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+exec "$SHELL"
+```
+
+
+### Step 3: Install Python 3.12
+Now that pyenv is installed, we can install different Python versions. To install Python 3.12, use the following command.
+
+```bash
+pyenv install 3.12
+```
+
+### Step 4: Connect Poetry to it
+Do this in the template dir. Pycharm will automatically connect to it later
+
+```bash
+poetry env use ~/.pyenv/versions/3.12.1/bin/python
+```
+(change the version number accordingly to what is installed)
+
+Finally, verify that Poetry indeed is connected to the proper version:
+```bash
+poetry enf info
+```
+  
+</details>
+
 2. Install dependencies:
 
 ```bash
@@ -21,10 +77,22 @@ poetry install --no-root --with dev,test
 poetry run pre-commit install
 ```
 
-4. Launch of the project:
+4. Launch the project:
 
 ```bash
 poetry run uvicorn app.main:app [--reload]
+```
+
+Alternatively, you can use Classy-FastAPI-based run:
+```bash
+poetry run uvicorn app.main_classy:app [--reload]
+```
+
+or do it in two steps:
+```bash
+poetry shell
+uvicorn app.main:app
+
 ```
 
 5. Running tests:
@@ -82,6 +150,13 @@ helm upgrade --install <release-name> <repo-name>/<chart-name>
 ```
 
 https://helm.sh/ru/docs/
+
+## Classy-FastAPI
+Classy-FastAPI allows you to easily do dependency injection of 
+object instances that should persist between FastAPI routes invocations,
+e.g. database connections.
+More on that (with examples) at [Classy-FastAPI GitLab page](https://gitlab.com/companionlabs-opensource/classy-fastapi
+).
 
 ## GitHub Actions
 GitHub Actions run tests, build and push a Docker image, creat and push a Helm chart release, deploy the project to Kubernetes cluster.
