@@ -5,32 +5,33 @@
 # For detailed explanation and more examples see:
 # https://gitlab.com/companionlabs-opensource/classy-fastapi
 
+from typing import Union
+
+from classy_fastapi import Routable, delete, get
 from fastapi import FastAPI
-from classy_fastapi import Routable, get, delete
 
 
 class KVStore:
     def __init__(self):
-        self.kvs = {"abc": 123}
+        self.kvs: dict[str, int] = {"abc": 123}
 
-    def get_value(self, key):
+    def get_value(self, key: str) -> Union[int | None]:
         return self.kvs.get(key)
 
-    def delete_key(self, key):
+    def delete_key(self, key: str) -> None:
         self.kvs.pop(key)
 
 
 class KVSRoutes(Routable):
-
     def __init__(self, kvstore: KVStore) -> None:
         super().__init__()
         self.__kvs = kvstore
 
-    @get('/key/{key}')
-    def get_value(self, key: str) -> [int | None]:
+    @get("/key/{key}")
+    def get_value(self, key: str) -> Union[int | None]:
         return self.__kvs.get_value(key)
 
-    @delete('/key/{key}')
+    @delete("/key/{key}")
     def delete_key(self, key: str) -> None:
         self.__kvs.delete_key(key)
 
