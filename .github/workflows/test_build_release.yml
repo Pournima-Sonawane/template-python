@@ -44,10 +44,15 @@ jobs:
 
       - name: Run style checks
         run: |
-          poetry run mypy app
-          poetry run isort app --check --diff
-          poetry run flake8 app
-          poetry run black app --check --diff
+          poetry run mypy .
+          poetry run isort . --check --diff
+          poetry run flake8 .
+          poetry run black . --check --diff
+
+      - name: Verify OpenAPI spec has been updated
+        run: |
+          poetry run python ./tools/extract_openapi.py app.main:app --app-dir . --out openapi_generated.yaml
+          git diff --exit-code openapi.yaml openapi_generated.yaml
 
       - name: Run tests
         run: poetry run pytest

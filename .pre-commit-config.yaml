@@ -20,22 +20,44 @@ repos:
     hooks:
     -   id: shellcheck
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.940
+  - repo: local
     hooks:
       - id: mypy
+        name: mypy
+        entry: poetry run mypy
+        language: system
+        types: [python]
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+  - repo: local
     hooks:
       - id: isort
+        name: isort
+        entry: poetry run isort
+        language: system
+        types: [python]
 
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+  - repo: local
     hooks:
       - id: flake8
+        name: flake8
+        entry: poetry run flake8
+        language: system
+        types: [python]
 
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 23.12.1
+  - repo: local
     hooks:
       - id: black
+        name: black
+        entry: poetry run black
+        language: system
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: add_openapi
+        name: Add openapi
+        entry: poetry run python ./tools/extract_openapi.py app.main:app --app-dir . && git add openapi.yaml
+        language: system
+        stages: [commit]
+        pass_filenames: false
+        always_run: true
