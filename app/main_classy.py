@@ -5,8 +5,6 @@
 # For detailed explanation and more examples see:
 # https://gitlab.com/companionlabs-opensource/classy-fastapi
 
-from typing import Union
-
 from classy_fastapi import Routable, delete, get
 from fastapi import FastAPI
 
@@ -15,7 +13,7 @@ class KVStore:
     def __init__(self):
         self.kvs: dict[str, int] = {"abc": 123}
 
-    def get_value(self, key: str) -> Union[int | None]:
+    def get_value(self, key: str) -> int | None:
         return self.kvs.get(key)
 
     def delete_key(self, key: str) -> None:
@@ -28,7 +26,7 @@ class KVSRoutes(Routable):
         self.__kvs = kvstore
 
     @get("/key/{key}")
-    def get_value(self, key: str) -> Union[int | None]:
+    def get_value(self, key: str) -> int | None:
         return self.__kvs.get_value(key)
 
     @delete("/key/{key}")
