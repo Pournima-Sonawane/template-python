@@ -83,11 +83,6 @@ poetry run pre-commit install
 poetry run uvicorn app.main:app [--reload]
 ```
 
-Alternatively, you can use Classy-FastAPI-based run:
-```bash
-poetry run uvicorn app.main_classy:app [--reload]
-```
-
 or do it in two steps:
 ```bash
 poetry shell
@@ -95,7 +90,7 @@ uvicorn app.main:app
 
 ```
 
-5. Running tests:
+1. Running tests:
 
 ```bash
 poetry run pytest

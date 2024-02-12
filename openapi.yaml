@@ -19,7 +19,10 @@ paths:
                 title: Response Read Root  Get
   /item/:
     get:
+      tags:
+      - items
       summary: Read Items
+      description: Read all items
       operationId: read_items_item__get
       responses:
         '200':
@@ -32,7 +35,10 @@ paths:
                 type: array
                 title: Response Read Items Item  Get
     post:
+      tags:
+      - items
       summary: Create Item
+      description: Create a new item
       operationId: create_item_item__post
       requestBody:
         content:
@@ -53,17 +59,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /item/{item_id}/:
+  /item/{id}/:
     get:
+      tags:
+      - items
       summary: Read Item
-      operationId: read_item_item__item_id___get
+      description: Read data of an item
+      operationId: read_item_item__id___get
       parameters:
-      - name: item_id
+      - name: id
         in: path
         required: true
         schema:
           type: integer
-          title: Item Id
+          title: Id
       responses:
         '200':
           description: Successful Response
@@ -78,15 +87,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
     put:
+      tags:
+      - items
       summary: Update Item
-      operationId: update_item_item__item_id___put
+      description: Update data of an item
+      operationId: update_item_item__id___put
       parameters:
-      - name: item_id
+      - name: id
         in: path
         required: true
         schema:
           type: integer
-          title: Item Id
+          title: Id
       requestBody:
         required: true
         content:
@@ -107,15 +119,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
     delete:
+      tags:
+      - items
       summary: Delete Item
-      operationId: delete_item_item__item_id___delete
+      description: Delete an item
+      operationId: delete_item_item__id___delete
       parameters:
-      - name: item_id
+      - name: id
         in: path
         required: true
         schema:
           type: integer
-          title: Item Id
+          title: Id
       responses:
         '204':
           description: Successful Response

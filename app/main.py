@@ -10,4 +10,4 @@ async def read_root() -> dict[str, str]:
     return {"Hello": "World"}
 
 
-app.include_router(items.router)
+app.include_router(items.routes.router)
