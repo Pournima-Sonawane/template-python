@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import sys
 
 import yaml
@@ -36,6 +37,10 @@ def main() -> None:
     version = openapi.get("openapi", "unknown version")
 
     print(f"writing openapi spec v{version}")
+    dir = os.path.dirname(args.out)
+    if dir:
+        os.makedirs(dir, exist_ok=True)
+
     with open(args.out, "w") as f:
         if args.out.endswith(".json"):
             json.dump(openapi, f, indent=2)

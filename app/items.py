@@ -21,6 +21,17 @@ class Item(BaseModel):
     id: int
     name: str
 
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "id": 1,
+                    "name": "test name",
+                }
+            ]
+        }
+    }
+
 
 class Storage:
     def __init__(self, initial: Optional[dict[int, Item]] = None) -> None:
@@ -50,18 +61,27 @@ class ItemRoutes(Routable):
         super().__init__()
         self.__storage = storage
 
-    @get("/item/", description="Read all items", response_model=list[Item], tags=TAGS)
+    @get(
+        "/item/",
+        operation_id="items__read_all",
+        summary="Read all items",
+        response_model=list[Item],
+        tags=TAGS,
+    )
     async def read_items(self) -> list[Item]:
+        """Read all items from the storage"""
         return self.__storage.all()
 
     @post(
         "/item/",
-        description="Create a new item",
+        operation_id="items__create",
+        summary="Create an item",
         response_model=Item,
         status_code=status.HTTP_201_CREATED,
         tags=TAGS,
     )
     async def create_item(self, item: Item) -> Item:
+        """Create a new item in the storage"""
         if self.__storage.has(item.id):
             raise HTTPException(status_code=400, detail="Item already exists")
         self.__storage.set(item.id, item)
@@ -69,11 +89,13 @@ class ItemRoutes(Routable):
 
     @get(
         "/item/{id}/",
-        description="Read data of an item",
+        operation_id="items__read_item",
+        summary="Read an item",
         response_model=Item,
         tags=TAGS,
     )
     async def read_item(self, id: int) -> Item | None:
+        """Read item from the storage"""
         item = self.__storage.get(id)
         if item is None:
             raise HTTPException(status_code=404, detail="Item not found")
@@ -81,11 +103,13 @@ class ItemRoutes(Routable):
 
     @put(
         "/item/{id}/",
-        description="Update data of an item",
+        operation_id="items__update_item",
+        summary="Update an item",
         response_model=Item,
         tags=TAGS,
     )
     async def update_item(self, id: int, item: Item) -> Item:
+        """Update an item in the storage"""
         if not self.__storage.has(id):
             raise HTTPException(status_code=404, detail="Item not found")
         self.__storage.set(item.id, item)
@@ -93,11 +117,14 @@ class ItemRoutes(Routable):
 
     @delete(
         "/item/{id}/",
-        description="Delete an item",
+        operation_id="items__delete_item",
+        summary="Delete an item",
         status_code=status.HTTP_204_NO_CONTENT,
+        response_model=None,
         tags=TAGS,
     )
     async def delete_item(self, id: int) -> None:
+        """Delete an item from the storage"""
         if not self.__storage.has(id):
             raise HTTPException(status_code=404, detail="Item not found")
         self.__storage.delete(id)

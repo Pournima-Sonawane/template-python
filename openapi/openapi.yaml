@@ -1,29 +1,28 @@
 openapi: 3.1.0
 info:
-  title: FastAPI
+  title: Template-python OpenAPI
+  description: This is a OpenAPI schema of the template-python app
   version: 0.1.0
 paths:
   /:
     get:
-      summary: Read Root
-      operationId: read_root__get
+      summary: Example endpoint
+      description: Example endpoint that returns test data
+      operationId: example__get
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
               schema:
-                additionalProperties:
-                  type: string
-                type: object
-                title: Response Read Root  Get
+                $ref: '#/components/schemas/ExampleResponse'
   /item/:
     get:
       tags:
       - items
-      summary: Read Items
-      description: Read all items
-      operationId: read_items_item__get
+      summary: Read all items
+      description: Read all items from the storage
+      operationId: items__read_all
       responses:
         '200':
           description: Successful Response
@@ -33,13 +32,13 @@ paths:
                 items:
                   $ref: '#/components/schemas/Item'
                 type: array
-                title: Response Read Items Item  Get
+                title: Response Items  Read All
     post:
       tags:
       - items
-      summary: Create Item
-      description: Create a new item
-      operationId: create_item_item__post
+      summary: Create an item
+      description: Create a new item in the storage
+      operationId: items__create
       requestBody:
         content:
           application/json:
@@ -63,9 +62,9 @@ paths:
     get:
       tags:
       - items
-      summary: Read Item
-      description: Read data of an item
-      operationId: read_item_item__id___get
+      summary: Read an item
+      description: Read item from the storage
+      operationId: items__read_item
       parameters:
       - name: id
         in: path
@@ -89,9 +88,9 @@ paths:
     put:
       tags:
       - items
-      summary: Update Item
-      description: Update data of an item
-      operationId: update_item_item__id___put
+      summary: Update an item
+      description: Update an item in the storage
+      operationId: items__update_item
       parameters:
       - name: id
         in: path
@@ -121,9 +120,9 @@ paths:
     delete:
       tags:
       - items
-      summary: Delete Item
-      description: Delete an item
-      operationId: delete_item_item__id___delete
+      summary: Delete an item
+      description: Delete an item from the storage
+      operationId: items__delete_item
       parameters:
       - name: id
         in: path
@@ -142,6 +141,18 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ExampleResponse:
+      properties:
+        value:
+          type: string
+          title: Value
+      type: object
+      required:
+      - value
+      title: ExampleResponse
+      description: Example data
+      examples:
+      - value: test value
     HTTPValidationError:
       properties:
         detail:
@@ -164,6 +175,9 @@ components:
       - id
       - name
       title: Item
+      examples:
+      - id: 1
+        name: test name
     ValidationError:
       properties:
         loc:
