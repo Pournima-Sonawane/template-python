@@ -2,6 +2,12 @@ openapi: 3.1.0
 info:
   title: Template-python OpenAPI
   description: This is a OpenAPI schema of the template-python app
+  contact:
+    name: HIRO-MicroDataCenters
+    email: all-hiro@hiro-microdatacenters.nl
+  license:
+    name: MIT
+    url: https://github.com/HIRO-MicroDataCenters-BV/template-python/blob/main/LICENSE
   version: 0.1.0
 paths:
   /:

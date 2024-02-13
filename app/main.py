@@ -14,6 +14,15 @@ class CustomFastAPI(FastAPI):
             title="Template-python OpenAPI",
             version="0.1.0",
             description="This is a OpenAPI schema of the template-python app",
+            contact={
+                "name": "HIRO-MicroDataCenters",
+                "email": "all-hiro@hiro-microdatacenters.nl",
+            },
+            license_info={
+                "name": "MIT",
+                "url": "https://github.com/HIRO-MicroDataCenters-BV"
+                "/template-python/blob/main/LICENSE",
+            },
             routes=self.routes,
         )
         self.openapi_schema = openapi_schema
