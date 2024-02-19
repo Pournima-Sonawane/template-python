@@ -12,7 +12,7 @@ class CustomFastAPI(FastAPI):
             return self.openapi_schema
         openapi_schema = get_openapi(
             title="Template-python OpenAPI",
-            version="0.1.0",
+            version="0.0.0",
             description="This is a OpenAPI schema of the template-python app",
             contact={
                 "name": "HIRO-MicroDataCenters",

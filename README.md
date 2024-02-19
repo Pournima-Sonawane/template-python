@@ -133,6 +133,9 @@ You can build release manually:
 helm package charts/<chart-name>
 ```
 
+## OpenAPI schema
+The OpenAPI schema will be generated automatically and saved in the release artifacts `https://github.com/<workspace>/<project>/releases/`.
+
 ## Deploy
 The release is automatically deployed to Kubernetes cluster in GitHub Actions.
 

@@ -16,26 +16,16 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.12"]
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.12"
 
       - name: Install poetry
         run: pip install poetry
-
-      - name: Set up cache
-        uses: actions/cache@v4
-        with:
-          path: .venv
-          key: venv-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
         run: |
@@ -49,20 +39,28 @@ jobs:
           poetry run flake8 .
           poetry run black . --check --diff
 
-      - name: Verify OpenAPI spec has been updated
-        run: |
-          poetry run python ./tools/extract_openapi.py app.main:app --app-dir . --out openapi_generated.yaml
-          git diff --exit-code ./openapi/openapi.yaml openapi_generated.yaml
-
       - name: Run tests
         run: poetry run pytest
 
   build:
     runs-on: ubuntu-latest
     needs: [test]
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install poetry
+        run: pip install poetry
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -70,50 +68,59 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Make versions
+        run: |
+          chmod +x ./tools/version.sh
+          ./tools/version.sh "${{ github.sha }}" "${{ secrets.DOCKER_IMAGE_NAME }}"
+          echo "APP_VERSION=$(cat "./VERSION")" >> $GITHUB_ENV
+          echo "DOCKER_IMAGES=$(cat "./DOCKER_IMAGES")" >> $GITHUB_ENV
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Make versions
-        run: |
-          chmod +x ./tools/version.sh
-          ./tools/version.sh "${{ github.sha }}" "${{ secrets.DOCKER_IMAGE_NAME }}"
-          DOCKER_IMAGES=$(cat "./DOCKER_IMAGES")
-          echo "DOCKER_IMAGES=$DOCKER_IMAGES" >> $GITHUB_ENV
-
-      - name: Build and push
+      - name: Build and push docker image
         uses: docker/build-push-action@v5
         with:
           push: true
           tags: ${{ env.DOCKER_IMAGES }}
 
-  release:
-    runs-on: ubuntu-latest
-    needs: [build]
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Create release dir
+        run: mkdir -p ./release
+
+      - name: Package helm chart
+        run: |
+          cd ./release
+          helm package ../charts/app
+
+      - name: Install dependencies
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry install --no-root --with dev
+
+      - name: Generate openapi.yaml
+        run: poetry run python ./tools/extract_openapi.py app.main:app --app-dir . --out ./release/openapi.yaml --app_version "${{ env.APP_VERSION }}"
 
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: Install Helm
-        uses: azure/setup-helm@v3
-
-      - name: Make versions
-        run: |
-          chmod +x ./tools/version.sh
-          ./tools/version.sh "${{ github.sha }}" "${{ secrets.DOCKER_IMAGE_NAME }}"
-
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.6.0
+      - name: Create github release
+        run: gh release create "${{ env.APP_VERSION }}" ./release/*
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Generate index.yaml
+        run: |
+          chmod +x ./tools/helm_chart_repo.sh
+          ./tools/helm_chart_repo.sh "${{ secrets.HELM_REPO_URL }}"
+
+      - name: Publish to github pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ github.token }}
+          publish_dir: .
+          publish_branch: gh-pages

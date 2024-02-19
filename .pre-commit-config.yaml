@@ -51,13 +51,3 @@ repos:
         entry: poetry run black
         language: system
         types: [python]
-
-  - repo: local
-    hooks:
-      - id: add_openapi
-        name: Add openapi
-        entry: poetry run python ./tools/extract_openapi.py app.main:app --app-dir . --out ./openapi/openapi.yaml && git add ./openapi/openapi.yaml
-        language: system
-        stages: [commit]
-        pass_filenames: false
-        always_run: true

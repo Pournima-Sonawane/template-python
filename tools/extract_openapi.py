@@ -24,6 +24,11 @@ def main() -> None:
         help="Output file ending in .json or .yaml",
         default="openapi.yaml",
     )
+    parser.add_argument(
+        "--app_version",
+        help="App version",
+        default=None,
+    )
 
     args = parser.parse_args()
 
@@ -34,9 +39,11 @@ def main() -> None:
     print(f"importing app from {args.app}")
     app = import_from_string(args.app)
     openapi = app.openapi()
-    version = openapi.get("openapi", "unknown version")
 
-    print(f"writing openapi spec v{version}")
+    if args.app_version is not None:
+        openapi["info"]["version"] = args.app_version
+
+    print("writing openapi spec")
     dir = os.path.dirname(args.out)
     if dir:
         os.makedirs(dir, exist_ok=True)
