@@ -1,50 +1,11 @@
-name: Test, build and release
+name: Build web
 
 on:
-  push:
-    branches:
-      - '**'
-    tags:
-      - '**'
-    paths-ignore:
-      - 'releases/**'
-  pull_request:
-    branches:
-      - '**'
-  workflow_dispatch:
+  workflow_call:
 
 jobs:
-  test:
+  build_web:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install poetry
-        run: pip install poetry
-
-      - name: Install dependencies
-        run: |
-          poetry config virtualenvs.in-project true
-          poetry install --no-root --with dev,test
-
-      - name: Run style checks
-        run: |
-          poetry run mypy .
-          poetry run isort . --check --diff
-          poetry run flake8 .
-          poetry run black . --check --diff
-
-      - name: Run tests
-        run: poetry run pytest
-
-  build:
-    runs-on: ubuntu-latest
-    needs: [test]
     permissions:
       contents: write
     steps:
@@ -108,7 +69,7 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: Create github release
+      - name: Create a github release
         run: gh release create "${{ env.APP_VERSION }}" ./release/*
         env:
           GH_TOKEN: ${{ github.token }}
