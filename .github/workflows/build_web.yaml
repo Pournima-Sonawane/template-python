@@ -46,21 +46,13 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_IMAGES }}
 
-      - name: Create release dir
-        run: mkdir -p ./release
-
-      - name: Package helm chart
-        run: |
-          cd ./release
-          helm package ../charts/app
-
       - name: Install dependencies
         run: |
           poetry config virtualenvs.in-project true
           poetry install --no-root --with dev
 
       - name: Generate openapi.yaml
-        run: poetry run python ./tools/extract_openapi.py app.main:app --app-dir . --out ./release/openapi.yaml --app_version "${{ env.APP_VERSION }}"
+        run: poetry run python ./tools/extract_openapi.py app.main:app --app-dir . --out ./openapi.yaml --app_version "${{ env.APP_VERSION }}"
 
       - name: Configure Git
         run: |
@@ -68,18 +60,12 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Create a github release
-        run: gh release create "${{ env.APP_VERSION }}" ./release/*
+        run: gh release create "${{ env.APP_VERSION }}" ./openapi.yaml
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Generate index.yaml
-        run: |
-          chmod +x ./tools/helm_chart_repo.sh
-          ./tools/helm_chart_repo.sh "${{ secrets.HELM_REPO_URL }}"
-
-      - name: Publish to github pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Publish Helm charts
+        uses: stefanprodan/helm-gh-pages@master
         with:
-          github_token: ${{ github.token }}
-          publish_dir: .
-          publish_branch: gh-pages
+          token: ${{ github.token }}
+          target_dir: "./charts-repo/"
