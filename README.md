@@ -178,11 +178,11 @@ Set up secrets at `https://github.com/<workspace>/<project>/settings/secrets/act
 10. HELM_REPO_URL - `https://<workspace>.github.io/<project>/`
 
 **After execution**  
-The OpenAPI schema and the Helm chart will be available at `https://github.com/<workspace>/<project>/releases/`.  
-The index.yaml file containing the list of Helm charts will be available at `https://<workspace>.github.io/<project>/index.yaml`. You can use URL `https://<workspace>.github.io/<project>/` on https://artifacthub.io/.
+The OpenAPI schema will be available at `https://github.com/<workspace>/<project>/releases/`.  
+The index.yaml file containing the list of Helm charts will be available at `https://<workspace>.github.io/<project>/charts-repo/index.yaml`. You can this URL on https://artifacthub.io/.
 
 ### Library
-To change the build process for the library, you need to replace the nested workflow ./.github/workflows/build_web.yaml to ./.github/workflows/build_lib.yaml in .github\workflows\test_and_build.yaml:
+To change the build process for the library, you need to replace the nested workflow `./.github/workflows/build_web.yaml` to `./.github/workflows/build_lib.yaml` in `.github/workflows/test_and_build.yaml`:
 ```yaml
 build:
   needs: [test]
