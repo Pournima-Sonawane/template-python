@@ -22,7 +22,7 @@ make_version() {
   BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}  # Branch or pr or tag
   TAG=$( [[ $GITHUB_REF == refs/tags/* ]] && echo "${GITHUB_REF##refs/tags/}" || echo "" )
 
-  git fetch --tags
+  git fetch --tags --force
   git fetch --prune --unshallow || true
 
   LAST_RELEASE=$(get_last_release "$GIT_SHA")
