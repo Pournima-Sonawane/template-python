@@ -75,11 +75,6 @@ make_version() {
 get_last_release() {
   GIT_SHA="$1"
 
-  git config --global --add safe.directory /github/workspace
-
-  git fetch --tags
-  git fetch --prune --unshallow || true
-
   LAST_RELEASE=$(git tag --list --merged "$GIT_SHA" --sort=-v:refname | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$" | head -n 1)
 
   echo "$LAST_RELEASE"
