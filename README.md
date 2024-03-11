@@ -190,7 +190,7 @@ The release version for branches, pull requests, and other tags will be generate
 ```
 
 ## Helm Chart Versioning
-The Helm chart version changeng manually. To do this, you need to change the version in the Chart.yaml file. When creating a release, the version of the Helm chart will be the same as the value in the Chart.yaml file, change it manually.
+The Helm chart version changed manually. To do this, you need to change the version in the Chart.yaml file. When creating a release, the version of the Helm chart will be the same as the value in the Chart.yaml file, change it manually.
 
 ## GitHub Actions
 [GitHub Actions](https://docs.github.com/en/actions) triggers testing, builds, and application publishing for each release.  
