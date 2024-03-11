@@ -208,6 +208,10 @@ Usage example:
 act push -j deploy --secret-file my.secrets
 ```
 
+## Prometheus metrics
+The application includes prometheus-fastapi-instrumentator for monitoring performance and analyzing its operation. It automatically adds an endpoint `/metrics` where you can access application metrics for Prometheus. These metrics include information about request counts, request execution times, and other important indicators of application performance.
+More on that at (Prometheus FastAPI Instrumentator)[https://github.com/trallnag/prometheus-fastapi-instrumentator]
+
 ## Classy-FastAPI
 Classy-FastAPI allows you to easily do dependency injection of 
 object instances that should persist between FastAPI routes invocations,
