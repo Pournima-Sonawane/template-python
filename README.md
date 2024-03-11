@@ -132,7 +132,7 @@ poetry build
 poetry publish
 ```
 
-pypi_token - API token for authentication on PyPI. https://pypi.org/help/#apitoken
+pypi_token - API token for authentication on [PyPI](https://pypi.org/help/#apitoken). 
 
 ## Docker
 Build a docker image and run a container:
@@ -197,7 +197,7 @@ The Helm chart version changeng manually. To do this, you need to change the ver
 
 
 **Initial setup**  
-Create the branch gh-pages and use it as a GitHub page https://pages.github.com/.  
+Create the branch [gh-pages](https://pages.github.com/) and use it as a GitHub page.  
 Set up secrets at `https://github.com/<workspace>/<project>/settings/secrets/actions`:
 1. `DOCKER_IMAGE_NAME` - The name of the Docker image for uploading to the repository.
 2. `DOCKER_USERNAME` - The username for the Docker repository on [Docker Hub](https://hub.docker.com/).
@@ -241,14 +241,14 @@ After that, during the build process, the package will be built and published on
 Uploading the package to pypi.org only occurs when a.a.a release is created.
 
 **Initial setup**  
-Set up a secret token for PyPI at `https://github.com/<workspace>/<project>/settings/secrets/actions`.
-https://pypi.org/help/#apitoken
+Set up a [secret token](https://pypi.org/help/#apitoken) for PyPI at `https://github.com/<workspace>/<project>/settings/secrets/actions`.
+
 
 **After execution**  
 A package will be available at `https://github.com/<workspace>/<project>/releases/` and pypi.org. 
 
 ## Act
-You can run your GitHub Actions locally using https://github.com/nektos/act. 
+You can run your GitHub Actions locally using [Act](https://github.com/nektos/act). 
 
 Usage example:
 ```bash
