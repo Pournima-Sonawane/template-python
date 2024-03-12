@@ -153,15 +153,15 @@ minikube start
 ```
 3. Build a docker image:
 ```bash
-docker build . -t kg-exporter:latest
+docker build . -t <image_name>:<image_tag>
 ```
 4. Upload the docker image to minikube:
 ```bash
-minikube image load kg-exporter:latest
+minikube image load <image_name>:<image_tag>
 ```
 5. Deploy the service:
 ```bash
-helm upgrade --install kg-exporter-app ./charts/app --set image.repository=kg-exporter --set image.tag=latest --version 0.1.0
+helm upgrade --install <app_name> ./charts/app --set image.repository=<image_name> --set image.tag=latest --version 0.1.0
 ```
 
 ## Package
