@@ -7,13 +7,16 @@ Python service template for reuse.
 - [template-python](#template-python)
   - [Table of Contents](#table-of-contents)
   - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
+    - [Development](#development)
+    - [Deployment](#deployment)
+  - [Development](#development-1)
     - [Step 1: Update and Install Dependencies](#step-1-update-and-install-dependencies)
     - [Step 2: Install Pyenv](#step-2-install-pyenv)
     - [Step 3: Install Python 3.12](#step-3-install-python-312)
     - [Step 4: Connect Poetry to it](#step-4-connect-poetry-to-it)
-  - [Package](#package)
   - [Docker](#docker)
+  - [Manual build and deployment on minikube](#manual-build-and-deployment-on-minikube)
+  - [Package](#package)
   - [Helm chart](#helm-chart)
   - [OpenaAPI schema](#openaapi-schema)
   - [Release](#release)
@@ -26,20 +29,24 @@ Python service template for reuse.
 - [Collaboration guidelines](#collaboration-guidelines)
 
 ## Prerequisites
-
-  - [Python 3.12](#step-2-install-pyenv)
+### Development
+  - [Python 3.12](#step-2-install-pyenv) - look at detailed instructions below
   - [pipx](https://pipx.pypa.io/stable/)
   - [poetry](https://python-poetry.org/docs/)
   - [docker](https://docs.docker.com/get-docker/)
-  - [Docker Hub account](https://hub.docker.com/)
   - [Helm](https://helm.sh/en/docs/)
+  - [minikube](https://minikube.sigs.k8s.io/docs/start/)
+  - [Act](#act)
+
+### Deployment
+  - [Docker Hub account](https://hub.docker.com/)
   - [Github Actions](#github-actions) - repository use Github Actions to automate the build, test, release and deployment processes. For your convinience we recommend to fill necessary secrets in the repository settings.
 
 
 
-## Installation
+## Development
 <details>
-<summary>Install Python 3.12 if it is not available in your package manager</summary>
+<h4><summary>Install Python 3.12 if it is not available in your package manager</summary></h4>
 
 These instructions are for Ubuntu 22.04 and may not work for other versions.
 
@@ -48,7 +55,7 @@ Also, these instructions are about using Poetry with Pyenv-managed (non-system) 
 ### Step 1: Update and Install Dependencies
 Before we install pyenv, we need to update our package lists for upgrades and new package installations. We also need to install dependencies for pyenv. 
 
-Open your terminal and type:
+Open your terminal and type:  
 ```bash
 sudo apt-get update
 sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
@@ -124,16 +131,6 @@ poetry run tox
 ```
 For additional information visit official [docs](https://python-poetry.org/docs/)
 
-## Package
-To generate and publish a package on pypi.org, execute the following commands:
-```bash
-poetry config pypi-token.pypi <pypi_token>
-poetry build
-poetry publish
-```
-
-pypi_token - API token for authentication on [PyPI](https://pypi.org/help/#apitoken). 
-
 ## Docker
 Build a docker image and run a container:
 ```bash
@@ -146,6 +143,36 @@ Upload the Docker image to the repository:
 docker login -u <username>
 docker push <image_name>:<image_tag>
 ```
+
+
+## Manual build and deployment on minikube
+1. Install [minikube](https://minikube.sigs.k8s.io/docs/start/).
+2. Start minikube:
+```bash
+minikube start
+```
+3. Build a docker image:
+```bash
+docker build . -t kg-exporter:latest
+```
+4. Upload the docker image to minikube:
+```bash
+minikube image load kg-exporter:latest
+```
+5. Deploy the service:
+```bash
+helm upgrade --install kg-exporter-app ./charts/app --set image.repository=kg-exporter --set image.tag=latest --version 0.1.0
+```
+
+## Package
+To generate and publish a package on pypi.org, execute the following commands:
+```bash
+poetry config pypi-token.pypi <pypi_token>
+poetry build
+poetry publish
+```
+
+pypi_token - API token for authentication on [PyPI](https://pypi.org/help/#apitoken). 
 
 
 ## Helm chart
@@ -184,13 +211,10 @@ To create a release, add a tag in GIT with the format a.a.a, where 'a' is an int
 git tag 0.1.0
 git push origin 0.1.0
 ```
-The release version for branches, pull requests, and other tags will be generated based on the last tag of the form a.a.a:
-```bash
-0.1.0-<commit_hash>
-```
+The release version for branches, pull requests, and other tags will be generated based on the last tag of the form a.a.a.
 
 ## Helm Chart Versioning
-The Helm chart version changed manually. To do this, you need to change the version in the Chart.yaml file. When creating a release, the version of the Helm chart will be the same as the value in the Chart.yaml file, change it manually.
+The Helm chart version changed automatically when a new release is created. The version of the Helm chart is equal to the version of the release.
 
 ## GitHub Actions
 [GitHub Actions](https://docs.github.com/en/actions) triggers testing, builds, and application publishing for each release.  
