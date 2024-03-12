@@ -22,7 +22,7 @@ make_version() {
   BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}  # Branch or pr or tag
   TAG=$( [[ $GITHUB_REF == refs/tags/* ]] && echo "${GITHUB_REF##refs/tags/}" || echo "" )
 
-  git fetch --tags
+  git fetch --tags --force
   git fetch --prune --unshallow || true
 
   LAST_RELEASE=$(get_last_release "$GIT_SHA")
@@ -74,11 +74,6 @@ make_version() {
 
 get_last_release() {
   GIT_SHA="$1"
-
-  git config --global --add safe.directory /github/workspace
-
-  git fetch --tags
-  git fetch --prune --unshallow || true
 
   LAST_RELEASE=$(git tag --list --merged "$GIT_SHA" --sort=-v:refname | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$" | head -n 1)
 
