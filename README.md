@@ -42,6 +42,7 @@ Python service template for reuse.
     - [Web service](#web-service)
     - [Library](#library)
   - [Act](#act)
+  - [Prometheus metrics](#prometheus-metrics)
   - [Classy-FastAPI](#classy-fastapi)
 - [Collaboration guidelines](#collaboration-guidelines)
 
@@ -147,15 +148,6 @@ You can test the application for multiple versions of Python. To do this, you ne
 poetry run tox
 ```
 
-## Package
-To generate and publish a package on pypi.org, execute the following commands:
-```bash
-poetry config pypi-token.pypi <pypi_token>
-poetry build
-poetry publish
-```
-
-pypi_token - API token for authentication on PyPI. https://pypi.org/help/#apitoken
 
 ## Docker
 Build a [Docker](https://docs.docker.com/) image and run a container:
@@ -251,9 +243,9 @@ Set up secrets at `https://github.com/<workspace>/<project>/settings/secrets/act
 1. `DOCKER_IMAGE_NAME` - The name of the Docker image for uploading to the repository.
 2. `DOCKER_USERNAME` - The username for the Docker repository on [Docker Hub](https://hub.docker.com/).
 3. `DOCKER_PASSWORD` - The password for the Docker repository.
-4. `AWS_ACCESS_KEY_ID` - [AWS Access Key ID.](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html)
+4. `AWS_ACCESS_KEY_ID` - [AWS Access Key ID.](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html).
 5. `AWS_SECRET_ACCESS_KEY` - AWS Secret Access Key
-6. `AWS_REGION` - [AWS region.](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/)
+6. `AWS_REGION` - [AWS region.](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/).
 7. `EKS_CLUSTER_ROLE_ARN` - The IAM role's ARN in AWS, providing permissions for managing an Amazon EKS Kubernetes cluster.
 8. `EKS_CLUSTER_NAME` - Amazon EKS Kubernetes cluster name.
 9. `EKS_CLUSTER_NAMESPACE` - Amazon EKS Kubernetes cluster namespace.
@@ -270,8 +262,8 @@ strategy:
 The process of building and publishing differs for web services and libraries.
 
 ### Web service
-The default build and publish process is configured for a web application (.github\workflows\build_web.yaml).
-During this process, a Docker image is built, a Helm chart is created, an openapi.yaml is generated, and the web service is deployed to a Kubernetes cluster.
+The default build and publish process is configured for a web application (`.github\workflows\build_web.yaml`).
+During this process, a Docker image is built, a Helm chart is created, an `openapi.yaml` is generated, and the web service is deployed to a Kubernetes cluster.
 
 **After execution**  
 The OpenAPI schema will be available at `https://github.com/<workspace>/<project>/releases/`.  
@@ -297,7 +289,7 @@ Set up a [secret token](https://pypi.org/help/#apitoken) for PyPI at `https://gi
 A package will be available at `https://github.com/<workspace>/<project>/releases/` and pypi.org. 
 
 ## Act
-You can run your GitHub Actions locally using [Act](https://github.com/nektos/act). 
+[Act](https://github.com/nektos/act) allows you to run your GitHub Actions locally (e.g., for developing tests)
 
 Usage example:
 ```bash
