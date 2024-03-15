@@ -134,7 +134,7 @@ helm repo update <repo_name>
 helm upgrade --install <release_name> <repo_name>/<chart_name>
 ```
 
-https://helm.sh/ru/docs/
+(Helm docs)[https://helm.sh/docs/]
 
 ## OpenaAPI schema
 To manually generate the OpenAPI schema, execute the command:
