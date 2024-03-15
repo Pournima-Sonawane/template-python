@@ -18,19 +18,62 @@ Python service template for reuse.
   * [Classy-FastAPI](#classy-fastapi)
 - [Collaboration guidelines](#collaboration-guidelines)
 
-## Installation
-<details>
-<summary>Install Python 3.12 if it is not available in your package manager</summary>
 
-These instructions are for Ubuntu 22.04. If you're on a different distribution,
-or - God forbid! - Windows, you should adjust these accordingly.
+## Table of Contents
+
+- [template-python](#template-python)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+    - [Development](#development)
+    - [Deployment](#deployment)
+  - [Development](#development-1)
+    - [Step 1: Update and Install Dependencies](#step-1-update-and-install-dependencies)
+    - [Step 2: Install Pyenv](#step-2-install-pyenv)
+    - [Step 3: Install Python 3.12](#step-3-install-python-312)
+    - [Step 4: Connect Poetry to it](#step-4-connect-poetry-to-it)
+  - [Docker](#docker)
+  - [Manual build and deployment on minikube](#manual-build-and-deployment-on-minikube)
+  - [Package](#package)
+  - [Helm chart](#helm-chart)
+  - [OpenaAPI schema](#openaapi-schema)
+  - [Release](#release)
+  - [Helm Chart Versioning](#helm-chart-versioning)
+  - [GitHub Actions](#github-actions)
+    - [Web service](#web-service)
+    - [Library](#library)
+  - [Act](#act)
+  - [Prometheus metrics](#prometheus-metrics)
+  - [Classy-FastAPI](#classy-fastapi)
+- [Collaboration guidelines](#collaboration-guidelines)
+
+## Prerequisites
+### Development
+  - [Python 3.12](#step-2-install-pyenv) - look at detailed instructions below
+  - [pipx](https://pipx.pypa.io/stable/)
+  - [poetry](https://python-poetry.org/docs/)
+  - [docker](https://docs.docker.com/get-docker/)
+  - [Helm](https://helm.sh/en/docs/)
+  - [minikube](https://minikube.sigs.k8s.io/docs/start/)
+  - [Act](#act)
+
+### Deployment
+  - [Docker Hub account](https://hub.docker.com/)
+  - [Github Actions](#github-actions) - repository use Github Actions to automate the build, test, release and deployment processes. For your convinience we recommend to fill necessary secrets in the repository settings.
+
+
+
+## Development
+<details>
+<h4><summary>Install Python 3.12 if it is not available in your package manager</summary></h4>
+
+These instructions are for Ubuntu 22.04 and may not work for other versions.
 
 Also, these instructions are about using Poetry with Pyenv-managed (non-system) Python.
  
 ### Step 1: Update and Install Dependencies
 Before we install pyenv, we need to update our package lists for upgrades and new package installations. We also need to install dependencies for pyenv. 
 
-Open your terminal and type:
+Open your terminal and type:  
 ```bash
 sudo apt-get update
 sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
@@ -47,6 +90,7 @@ echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
 echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 exec "$SHELL"
 ```
+For additional information visit official [docs](https://github.com/pyenv/pyenv?tab=readme-ov-file#installation)
 
 ### Step 3: Install Python 3.12
 Now that pyenv is installed, we can install different Python versions. To install Python 3.12, use the following command:
@@ -67,9 +111,10 @@ poetry enf info
 ```
 </details>  
 
+
 1. If you don't have `Poetry` installed run:
 ```bash
-pip install poetry
+pipx install poetry
 ```
 
 2. Install dependencies:
@@ -85,7 +130,7 @@ poetry run pre-commit install
 
 4. Launch the project:
 ```bash
-poetry run uvicorn app.main:app [--reload]
+poetry run uvicorn app.main:app 
 ```
 or do it in two steps:
 ```bash
@@ -103,15 +148,6 @@ You can test the application for multiple versions of Python. To do this, you ne
 poetry run tox
 ```
 
-## Package
-To generate and publish a package on pypi.org, execute the following commands:
-```bash
-poetry config pypi-token.pypi <pypi_token>
-poetry build
-poetry publish
-```
-
-`pypi_token` - [API token](https://pypi.org/help/#apitoken) for authentication on PyPI.
 
 ## Docker
 Build a [Docker](https://docs.docker.com/) image and run a container:
@@ -126,10 +162,41 @@ docker login -u <username>
 docker push <image_name>:<image_tag>
 ```
 
+
+## Manual build and deployment on minikube
+1. Install [minikube](https://minikube.sigs.k8s.io/docs/start/).
+2. Start minikube:
+```bash
+minikube start
+```
+3. Build a docker image:
+```bash
+docker build . -t <image_name>:<image_tag>
+```
+4. Upload the docker image to minikube:
+```bash
+minikube image load <image_name>:<image_tag>
+```
+5. Deploy the service:
+```bash
+helm upgrade --install <app_name> ./charts/app --set image.repository=<image_name> --set image.tag=latest --version 0.1.0
+```
+
+## Package
+To generate and publish a package on pypi.org, execute the following commands:
+```bash
+poetry config pypi-token.pypi <pypi_token>
+poetry build
+poetry publish
+```
+
+pypi_token - API token for authentication on [PyPI](https://pypi.org/help/#apitoken). 
+
+
 ## Helm chart
 Authenticate your Helm client in the container registry:
 ```bash
-helm registry login <repo_url> -u <username>
+helm registry login <container_registry> -u <username>
 ```
 
 Create a [Helm chart](https://helm.sh/docs/):
@@ -139,7 +206,7 @@ helm package charts/<chart_name>
 
 Push the Helm chart to container registry:
 ```bash
-helm push <helm_chart_package> <repo_url>
+helm push <helm_chart_package> <container_registry>
 ```
 
 Deploy the Helm chart:
@@ -157,10 +224,33 @@ poetry run python ./tools/extract_openapi.py app.main:app --app-dir . --out open
 
 ## Release
 To create a release, add a tag in GIT with the format a.a.a, where 'a' is an integer.
+```bash
+git tag 0.1.0
+git push origin 0.1.0
+```
 The release version for branches, pull requests, and other tags will be generated based on the last tag of the form a.a.a.
+
+## Helm Chart Versioning
+The Helm chart version changed automatically when a new release is created. The version of the Helm chart is equal to the version of the release.
 
 ## GitHub Actions
 [GitHub Actions](https://docs.github.com/en/actions) triggers testing, builds, and application publishing for each release.  
+
+
+**Initial setup**  
+Create the branch [gh-pages](https://pages.github.com/) and use it as a GitHub page.  
+Set up secrets at `https://github.com/<workspace>/<project>/settings/secrets/actions`:
+1. `DOCKER_IMAGE_NAME` - The name of the Docker image for uploading to the repository.
+2. `DOCKER_USERNAME` - The username for the Docker repository on [Docker Hub](https://hub.docker.com/).
+3. `DOCKER_PASSWORD` - The password for the Docker repository.
+4. `AWS_ACCESS_KEY_ID` - [AWS Access Key ID.](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html).
+5. `AWS_SECRET_ACCESS_KEY` - AWS Secret Access Key
+6. `AWS_REGION` - [AWS region.](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/).
+7. `EKS_CLUSTER_ROLE_ARN` - The IAM role's ARN in AWS, providing permissions for managing an Amazon EKS Kubernetes cluster.
+8. `EKS_CLUSTER_NAME` - Amazon EKS Kubernetes cluster name.
+9. `EKS_CLUSTER_NAMESPACE` - Amazon EKS Kubernetes cluster namespace.
+10. `HELM_REPO_URL` - `https://<workspace>.github.io/<project>/`
+
 
 You can set up automatic testing in GitHub Actions for different versions of Python. To do this, specify the versions set in the `.github/workflows/test_and_build.yaml` file. For example:
 ```yaml
@@ -175,23 +265,9 @@ The process of building and publishing differs for web services and libraries.
 The default build and publish process is configured for a web application (`.github\workflows\build_web.yaml`).
 During this process, a Docker image is built, a Helm chart is created, an `openapi.yaml` is generated, and the web service is deployed to a Kubernetes cluster.
 
-**Initial setup**  
-Create the branch gh-pages and use it as a [GitHub page](https://pages.github.com/).
-Set up secrets at `https://github.com/<workspace>/<project>/settings/secrets/actions`:
-1. DOCKER_IMAGE_NAME - The name of the Docker image for uploading to the repository.
-2. DOCKER_USERNAME - The username for the [Docker repository](https://hub.docker.com/).
-3. DOCKER_PASSWORD - The password for the Docker repository.
-4. AWS_ACCESS_KEY_ID - [AWS Access Key ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html). 
-5. AWS_SECRET_ACCESS_KEY - AWS Secret Access Key
-6. AWS_REGION - [AWS region](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/). 
-7. EKS_CLUSTER_ROLE_ARN - The IAM role's ARN in AWS, providing permissions for managing an Amazon EKS Kubernetes cluster.
-8. EKS_CLUSTER_NAME - Amazon EKS Kubernetes cluster name.
-9. EKS_CLUSTER_NAMESPACE - Amazon EKS Kubernetes cluster namespace.
-10. HELM_REPO_URL - `https://<workspace>.github.io/<project>/`
-
 **After execution**  
 The OpenAPI schema will be available at `https://github.com/<workspace>/<project>/releases/`.  
-The `index.yaml` file containing the list of Helm charts will be available at `https://<workspace>.github.io/<project>/charts-repo/index.yaml`. You can find this URL at https://artifacthub.io/.
+The index.yaml file containing the list of Helm charts will be available at `https://<workspace>.github.io/<project>/charts-repo/index.yaml`. You can also publish your Helm charts to [Artifact Hub.](https://artifacthub.io/)
 
 ### Library
 To change the build process for the library, you need to replace the nested workflow `./.github/workflows/build_web.yaml` to `./.github/workflows/build_lib.yaml` in `.github/workflows/test_and_build.yaml`:
@@ -206,8 +282,8 @@ After that, during the build process, the package will be built and published on
 Uploading the package to pypi.org only occurs when a.a.a release is created.
 
 **Initial setup**  
-Set up a secret token for PyPI at `https://github.com/<workspace>/<project>/settings/secrets/actions`.
-https://pypi.org/help/#apitoken
+Set up a [secret token](https://pypi.org/help/#apitoken) for PyPI at `https://github.com/<workspace>/<project>/settings/secrets/actions`.
+
 
 **After execution**  
 A package will be available at `https://github.com/<workspace>/<project>/releases/` and pypi.org. 
