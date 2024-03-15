@@ -1,5 +1,22 @@
+
+
+
 # template-python
 Python service template for reuse.
+
+  * [Installation](#installation)
+  * [Package](#package)
+  * [Docker](#docker)
+  * [Helm chart](#helm-chart)
+  * [OpenaAPI schema](#openaapi-schema)
+  * [Release](#release)
+  * [GitHub Actions](#github-actions)
+    + [Web service](#web-service)
+    + [Library](#library)
+  * [Act](#act)
+  * [Prometheus metrics](#prometheus-metrics)
+  * [Classy-FastAPI](#classy-fastapi)
+- [Collaboration guidelines](#collaboration-guidelines)
 
 ## Installation
 <details>
@@ -81,7 +98,7 @@ uvicorn app.main:app
 poetry run pytest
 ```
 
-You can test the application for multiple versions of Python. To do this, you need to install the required Python versions on your operating system, specify these versions in the tox.ini file, and then run the tests:
+You can test the application for multiple versions of Python. To do this, you need to install the required Python versions on your operating system, specify these versions in the `tox.ini` file, and then run the tests:
 ```bash
 poetry run tox
 ```
@@ -94,10 +111,10 @@ poetry build
 poetry publish
 ```
 
-pypi_token - API token for authentication on PyPI. https://pypi.org/help/#apitoken
+`pypi_token` - [API token](https://pypi.org/help/#apitoken) for authentication on PyPI.
 
 ## Docker
-Build a docker image and run a container:
+Build a [Docker](https://docs.docker.com/) image and run a container:
 ```bash
 docker build . -t <image_name>:<image_tag>
 docker run <image_name>:<image_tag>
@@ -109,15 +126,13 @@ docker login -u <username>
 docker push <image_name>:<image_tag>
 ```
 
-https://docs.docker.com/
-
 ## Helm chart
 Authenticate your Helm client in the container registry:
 ```bash
 helm registry login <repo_url> -u <username>
 ```
 
-Create a Helm chart:
+Create a [Helm chart](https://helm.sh/docs/):
 ```bash
 helm package charts/<chart_name>
 ```
@@ -134,8 +149,6 @@ helm repo update <repo_name>
 helm upgrade --install <release_name> <repo_name>/<chart_name>
 ```
 
-(Helm docs)[https://helm.sh/docs/]
-
 ## OpenaAPI schema
 To manually generate the OpenAPI schema, execute the command:
 ```bash
@@ -147,10 +160,9 @@ To create a release, add a tag in GIT with the format a.a.a, where 'a' is an int
 The release version for branches, pull requests, and other tags will be generated based on the last tag of the form a.a.a.
 
 ## GitHub Actions
-GitHub Actions triggers testing, builds, and application publishing for each release.  
-https://docs.github.com/en/actions  
+[GitHub Actions](https://docs.github.com/en/actions) triggers testing, builds, and application publishing for each release.  
 
-You can set up automatic testing in GitHub Actions for different versions of Python. To do this, you need to specify the set of versions in the .github/workflows/test_and_build.yaml file. For example:
+You can set up automatic testing in GitHub Actions for different versions of Python. To do this, specify the versions set in the `.github/workflows/test_and_build.yaml` file. For example:
 ```yaml
 strategy:
   matrix:
@@ -160,18 +172,18 @@ strategy:
 The process of building and publishing differs for web services and libraries.
 
 ### Web service
-The default build and publish process is configured for a web application (.github\workflows\build_web.yaml).
-During this process, a Docker image is built, a Helm chart is created, an openapi.yaml is generated, and the web service is deployed to a Kubernetes cluster.
+The default build and publish process is configured for a web application (`.github\workflows\build_web.yaml`).
+During this process, a Docker image is built, a Helm chart is created, an `openapi.yaml` is generated, and the web service is deployed to a Kubernetes cluster.
 
 **Initial setup**  
-Create the branch gh-pages and use it as a GitHub page https://pages.github.com/.  
+Create the branch gh-pages and use it as a [GitHub page](https://pages.github.com/).
 Set up secrets at `https://github.com/<workspace>/<project>/settings/secrets/actions`:
 1. DOCKER_IMAGE_NAME - The name of the Docker image for uploading to the repository.
-2. DOCKER_USERNAME - The username for the Docker repository on https://hub.docker.com/.
+2. DOCKER_USERNAME - The username for the [Docker repository](https://hub.docker.com/).
 3. DOCKER_PASSWORD - The password for the Docker repository.
-4. AWS_ACCESS_KEY_ID - AWS Access Key ID. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
+4. AWS_ACCESS_KEY_ID - [AWS Access Key ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html). 
 5. AWS_SECRET_ACCESS_KEY - AWS Secret Access Key
-6. AWS_REGION - AWS region. https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
+6. AWS_REGION - [AWS region](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/). 
 7. EKS_CLUSTER_ROLE_ARN - The IAM role's ARN in AWS, providing permissions for managing an Amazon EKS Kubernetes cluster.
 8. EKS_CLUSTER_NAME - Amazon EKS Kubernetes cluster name.
 9. EKS_CLUSTER_NAMESPACE - Amazon EKS Kubernetes cluster namespace.
@@ -179,7 +191,7 @@ Set up secrets at `https://github.com/<workspace>/<project>/settings/secrets/act
 
 **After execution**  
 The OpenAPI schema will be available at `https://github.com/<workspace>/<project>/releases/`.  
-The index.yaml file containing the list of Helm charts will be available at `https://<workspace>.github.io/<project>/charts-repo/index.yaml`. You can this URL on https://artifacthub.io/.
+The `index.yaml` file containing the list of Helm charts will be available at `https://<workspace>.github.io/<project>/charts-repo/index.yaml`. You can find this URL at https://artifacthub.io/.
 
 ### Library
 To change the build process for the library, you need to replace the nested workflow `./.github/workflows/build_web.yaml` to `./.github/workflows/build_lib.yaml` in `.github/workflows/test_and_build.yaml`:
@@ -201,7 +213,7 @@ https://pypi.org/help/#apitoken
 A package will be available at `https://github.com/<workspace>/<project>/releases/` and pypi.org. 
 
 ## Act
-You can run your GitHub Actions locally using https://github.com/nektos/act. 
+[Act](https://github.com/nektos/act) allows you to run your GitHub Actions locally (e.g., for developing tests)
 
 Usage example:
 ```bash
@@ -209,13 +221,11 @@ act push -j deploy --secret-file my.secrets
 ```
 
 ## Prometheus metrics
-The application includes prometheus-fastapi-instrumentator for monitoring performance and analyzing its operation. It automatically adds an endpoint `/metrics` where you can access application metrics for Prometheus. These metrics include information about request counts, request execution times, and other important indicators of application performance.
-More on that at (Prometheus FastAPI Instrumentator)[https://github.com/trallnag/prometheus-fastapi-instrumentator]
+The application includes (`prometheus-fastapi-instrumentator`)[https://github.com/trallnag/prometheus-fastapi-instrumentator] for monitoring performance and analyzing its operation. It automatically adds an endpoint `/metrics` where you can access Prometheus's application metrics. These metrics include information about request counts, request execution times, and other important indicators of application performance.
 
 ## Classy-FastAPI
 Classy-FastAPI allows you to easily do dependency injection of 
-object instances that should persist between FastAPI routes invocations,
-e.g. database connections.
+object instances that should persist between FastAPI routes invocations, e.g., database connections.
 More on that (with examples) at [Classy-FastAPI GitLab page](https://gitlab.com/companionlabs-opensource/classy-fastapi).
 
 # Collaboration guidelines
