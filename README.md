@@ -1,5 +1,22 @@
+
+
+
 # template-python
 Python service template for reuse.
+
+  * [Installation](#installation)
+  * [Package](#package)
+  * [Docker](#docker)
+  * [Helm chart](#helm-chart)
+  * [OpenaAPI schema](#openaapi-schema)
+  * [Release](#release)
+  * [GitHub Actions](#github-actions)
+    + [Web service](#web-service)
+    + [Library](#library)
+  * [Act](#act)
+  * [Prometheus metrics](#prometheus-metrics)
+  * [Classy-FastAPI](#classy-fastapi)
+- [Collaboration guidelines](#collaboration-guidelines)
 
 
 ## Table of Contents
@@ -125,14 +142,23 @@ uvicorn app.main:app
 poetry run pytest
 ```
 
-You can test the application for multiple versions of Python. To do this, you need to install the required Python versions on your operating system, specify these versions in the tox.ini file, and then run the tests:
+You can test the application for multiple versions of Python. To do this, you need to install the required Python versions on your operating system, specify these versions in the `tox.ini` file, and then run the tests:
 ```bash
 poetry run tox
 ```
-For additional information visit official [docs](https://python-poetry.org/docs/)
+
+## Package
+To generate and publish a package on pypi.org, execute the following commands:
+```bash
+poetry config pypi-token.pypi <pypi_token>
+poetry build
+poetry publish
+```
+
+pypi_token - API token for authentication on PyPI. https://pypi.org/help/#apitoken
 
 ## Docker
-Build a docker image and run a container:
+Build a [Docker](https://docs.docker.com/) image and run a container:
 ```bash
 docker build . -t <image_name>:<image_tag>
 docker run <image_name>:<image_tag>
@@ -181,7 +207,7 @@ Authenticate your Helm client in the container registry:
 helm registry login <container_registry> -u <username>
 ```
 
-Create a Helm chart:
+Create a [Helm chart](https://helm.sh/docs/):
 ```bash
 helm package charts/<chart_name>
 ```
@@ -197,7 +223,6 @@ helm repo add <repo_name> <repo_url>
 helm repo update <repo_name>
 helm upgrade --install <release_name> <repo_name>/<chart_name>
 ```
-
 
 ## OpenaAPI schema
 To manually generate the OpenAPI schema, execute the command:
@@ -235,7 +260,7 @@ Set up secrets at `https://github.com/<workspace>/<project>/settings/secrets/act
 10. `HELM_REPO_URL` - `https://<workspace>.github.io/<project>/`
 
 
-You can set up automatic testing in GitHub Actions for different versions of Python. To do this, you need to specify the set of versions in the .github/workflows/test_and_build.yaml file. For example:
+You can set up automatic testing in GitHub Actions for different versions of Python. To do this, specify the versions set in the `.github/workflows/test_and_build.yaml` file. For example:
 ```yaml
 strategy:
   matrix:
@@ -279,10 +304,12 @@ Usage example:
 act push -j deploy --secret-file my.secrets
 ```
 
+## Prometheus metrics
+The application includes (`prometheus-fastapi-instrumentator`)[https://github.com/trallnag/prometheus-fastapi-instrumentator] for monitoring performance and analyzing its operation. It automatically adds an endpoint `/metrics` where you can access Prometheus's application metrics. These metrics include information about request counts, request execution times, and other important indicators of application performance.
+
 ## Classy-FastAPI
 Classy-FastAPI allows you to easily do dependency injection of 
-object instances that should persist between FastAPI routes invocations,
-e.g. database connections.
+object instances that should persist between FastAPI routes invocations, e.g., database connections.
 More on that (with examples) at [Classy-FastAPI GitLab page](https://gitlab.com/companionlabs-opensource/classy-fastapi).
 
 # Collaboration guidelines
