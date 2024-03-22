@@ -36,7 +36,7 @@ jobs:
         run: |
           chmod +x ./tools/version.sh
           ./tools/version.sh "${{ github.sha }}" "${{ env.REGISTRY }}/${{ vars.DOCKER_IMAGE_NAME }}"
-          echo "APP_VERSION=$(cat "./VERSION_APP")" >> $GITHUB_ENV
+          echo "APP_VERSION=$(cat "./VERSION")" >> $GITHUB_ENV
           echo "DOCKER_IMAGES=$(cat "./DOCKER_IMAGES")" >> $GITHUB_ENV
           echo "DOCKER_TAGS=$(cat "./VERSION_DOCKER")" >> $GITHUB_ENV
 
