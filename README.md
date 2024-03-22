@@ -57,7 +57,6 @@ Python service template for reuse.
   - [Act](#act)
 
 ### Deployment
-  - [Docker Hub account](https://hub.docker.com/)
   - [Github Actions](#github-actions) - repository use Github Actions to automate the build, test, release and deployment processes. For your convinience we recommend to fill necessary secrets in the repository settings.
 
 
@@ -238,18 +237,17 @@ The Helm chart version changed automatically when a new release is created. The 
 
 
 **Initial setup**  
-Create the branch [gh-pages](https://pages.github.com/) and use it as a GitHub page.  
-Set up secrets at `https://github.com/<workspace>/<project>/settings/secrets/actions`:
-1. `DOCKER_IMAGE_NAME` - The name of the Docker image for uploading to the repository.
-2. `DOCKER_USERNAME` - The username for the Docker repository on [Docker Hub](https://hub.docker.com/).
-3. `DOCKER_PASSWORD` - The password for the Docker repository.
-4. `AWS_ACCESS_KEY_ID` - [AWS Access Key ID.](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html).
-5. `AWS_SECRET_ACCESS_KEY` - AWS Secret Access Key
-6. `AWS_REGION` - [AWS region.](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/).
-7. `EKS_CLUSTER_ROLE_ARN` - The IAM role's ARN in AWS, providing permissions for managing an Amazon EKS Kubernetes cluster.
-8. `EKS_CLUSTER_NAME` - Amazon EKS Kubernetes cluster name.
-9. `EKS_CLUSTER_NAMESPACE` - Amazon EKS Kubernetes cluster namespace.
-10. `HELM_REPO_URL` - `https://<workspace>.github.io/<project>/`
+1. Create the branch [gh-pages](https://pages.github.com/) and use it as a GitHub page.  
+2. Set up variables at `https://github.com/<workspace>/<project>/settings/variables/actions`:
+- `DOCKER_IMAGE_NAME` - The name of the Docker image for uploading to the repository.
+3. Set up secrets at `https://github.com/<workspace>/<project>/settings/secrets/actions`:
+- `AWS_ACCESS_KEY_ID` - [AWS Access Key ID.](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html).
+- `AWS_SECRET_ACCESS_KEY` - AWS Secret Access Key
+- `AWS_REGION` - [AWS region.](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/).
+- `EKS_CLUSTER_ROLE_ARN` - The IAM role's ARN in AWS, providing permissions for managing an Amazon EKS Kubernetes cluster.
+- `EKS_CLUSTER_NAME` - Amazon EKS Kubernetes cluster name.
+- `EKS_CLUSTER_NAMESPACE` - Amazon EKS Kubernetes cluster namespace.
+- `HELM_REPO_URL` - `https://<workspace>.github.io/<project>/`
 
 
 You can set up automatic testing in GitHub Actions for different versions of Python. To do this, specify the versions set in the `.github/workflows/test_and_build.yaml` file. For example:
@@ -267,7 +265,8 @@ During this process, a Docker image is built, a Helm chart is created, an `opena
 
 **After execution**  
 The OpenAPI schema will be available at `https://github.com/<workspace>/<project>/releases/`.  
-The index.yaml file containing the list of Helm charts will be available at `https://<workspace>.github.io/<project>/charts-repo/index.yaml`. You can also publish your Helm charts to [Artifact Hub.](https://artifacthub.io/)
+The index.yaml file containing the list of Helm charts will be available at `https://<workspace>.github.io/<project>/helm-charts/index.yaml`. You can also publish your Helm charts to [Artifact Hub.](https://artifacthub.io/)  
+The Docker image will be available at `https://github.com/orgs/<workspace>/packages?repo_name=<project>`.
 
 ### Library
 To change the build process for the library, you need to replace the nested workflow `./.github/workflows/build_web.yaml` to `./.github/workflows/build_lib.yaml` in `.github/workflows/test_and_build.yaml`:
