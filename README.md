@@ -247,7 +247,7 @@ The Helm chart version changed automatically when a new release is created. The 
 - `EKS_CLUSTER_ROLE_ARN` - The IAM role's ARN in AWS, providing permissions for managing an Amazon EKS Kubernetes cluster.
 - `EKS_CLUSTER_NAME` - Amazon EKS Kubernetes cluster name.
 - `EKS_CLUSTER_NAMESPACE` - Amazon EKS Kubernetes cluster namespace.
-- `HELM_REPO_URL` - `https://<workspace>.github.io/<project>/`
+- `HELM_REPO_URL` - `https://<workspace>.github.io/<project>/helm-charts/`
 
 
 You can set up automatic testing in GitHub Actions for different versions of Python. To do this, specify the versions set in the `.github/workflows/test_and_build.yaml` file. For example:
