@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: ""
-  tag: ""
+  repository: ghcr.io/glaciation-heu/dell-uc2/opentraj-app # local repository
+  tag: latest
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -26,7 +26,13 @@ service:
   type: ClusterIP
   port: 80
 
-resources: {}
+resources:
+  requests:
+    cpu: "500m" # Reducing from 1000m to 500m as error for Pod Scheduling Issue: Insufficient CPU and Untolerated taint
+    memory: "1Gi" # reducing from 2Gi to 1Gi
+  limits:
+    cpu: "1000m"  # Reducing from 2000m to 1000m as error for Pod Scheduling Issue: Insufficient CPU and Untolerated taint
+    memory: "2Gi" # Reducing from 4Gi to 2Gi
 
 livenessProbe:
   httpGet:
